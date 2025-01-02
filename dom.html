@@ -1,5 +1,4 @@
 <!DOCTYPE html>
-<html lang="en">
 <head>
     <title>App Usuario</title>
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
@@ -38,12 +37,12 @@
                     address: document.getElementById("address").value,
                 };
                 try {
-                    const res = await axios.post(baseURL, user);
+                    const res = await axios.post(baseURL, { data: user });
                     alert("Usuario creado. ID: " + res.data.id);
                     localStorage.setItem("user", JSON.stringify({ id: res.data.id, ...user }));
                     showProfile();
-                } catch {
-                    alert("Error al registrar");
+                } catch (error) {
+                    alert(`Error al registrar: ${error.response?.data?.message || "Desconocido"}`);
                 }
             };
         }
@@ -64,14 +63,14 @@
                 const pass = document.getElementById("password").value;
                 try {
                     const res = await axios.get(`${baseURL}/${id}`);
-                    const user = res.data;
-                    if (user.password === pass) {
+                    const user = res.data.data; 
+                    if (user && user.password === pass) {
                         localStorage.setItem("user", JSON.stringify(user));
                         alert("Login exitoso");
                         showProfile();
-                    } else alert("Password incorrecto");
-                } catch {
-                    alert("Usuario no encontrado");
+                    } else alert("Password incorrecto o usuario no encontrado");
+                } catch (error) {
+                    alert(`Error: ${error.response?.data?.message || "Usuario no encontrado"}`);
                 }
             };
         }
@@ -112,12 +111,12 @@
 
                 try {
                     user.password = newPass;
-                    await axios.put(`${baseURL}/${user.id}`, user);
+                    await axios.put(`${baseURL}/${user.id}`, { data: user });
                     alert("Password cambiado");
                     localStorage.setItem("user", JSON.stringify(user));
                     showProfile();
-                } catch {
-                    alert("Error al cambiar el password");
+                } catch (error) {
+                    alert(`Error: ${error.response?.data?.message || "Error al cambiar el password"}`);
                 }
             };
         }
